@@ -1,11 +1,11 @@
 namespace ServiceInvoiceImporter.Core.Domains.Invoices.Dtos.Requests;
 
-record NotaFiscalCreateRequest
+public record NotaFiscalCreateRequest
 (
-        int Numero,
-        string CNPJPrestador,
-        string CNPJTomador,
-        DateTime DataEmissao,
-        string DescricaoServico,
-        decimal ValorTotal
+    int Numero,
+    string CNPJPrestador,
+    string CNPJTomador,
+    DateOnly DataEmissao,
+    string DescricaoServico,
+    decimal ValorTotal
 );
