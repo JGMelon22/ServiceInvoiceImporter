@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace ServiceInvoiceImporter.Core.Domains.Invoices.Entities;
 
 public class NotaFiscal
