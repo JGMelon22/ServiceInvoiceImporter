@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/ServiceInvoiceImporter.API/ServiceInvoiceImporter.API.csproj" />
+    <Project Path="src/ServiceInvoiceImporter.Core/ServiceInvoiceImporter.Core.csproj" />
+    <Project Path="src/ServiceInvoiceImporter.Infrastructure/ServiceInvoiceImporter.Infrastructure.csproj" />
+  </Folder>
+</Solution>
