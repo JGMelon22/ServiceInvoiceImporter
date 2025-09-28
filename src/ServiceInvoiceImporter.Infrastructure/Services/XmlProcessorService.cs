@@ -7,6 +7,8 @@ using ServiceInvoiceImporter.Core.Domains.Invoices.Mappings;
 using System.Xml;
 using System.Xml.Linq;
 using static ServiceInvoiceImporter.Core.Domains.Invoices.Mappings.NotaFiscalMappingExtensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace ServiceInvoiceImporter.Infrastructure.Services;
 
