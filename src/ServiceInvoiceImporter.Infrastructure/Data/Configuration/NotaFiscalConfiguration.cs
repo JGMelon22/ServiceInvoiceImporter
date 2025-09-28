@@ -37,10 +37,7 @@ public class NotaFiscalConfiguration : IEntityTypeConfiguration<NotaFiscal>
         builder.Property(n => n.DataCriacao)
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.HasIndex(n => n.Id)
-            .HasDatabaseName("IDX_NotaFiscal_Id");
-
-        builder.HasIndex(n => n.CNPJPrestador)
-            .HasDatabaseName("IDX_NotaFiscal_CnpjPrestador");
+        builder.HasIndex(n => n.Numero)
+            .HasDatabaseName("IDX_NotaFiscal_Numero");
     }
 }
