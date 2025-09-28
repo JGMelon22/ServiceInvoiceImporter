@@ -9,4 +9,8 @@
     <Project Path="src/ServiceInvoiceImporter.Core/ServiceInvoiceImporter.Core.csproj" />
     <Project Path="src/ServiceInvoiceImporter.Infrastructure/ServiceInvoiceImporter.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/UnitTets/">
+    <Project Path="tests/UnitTets/ServiceInvoiceImporter.Infrastructure.UnitTests/ServiceInvoiceImporter.Infrastructure.UnitTests.csproj" />
+  </Folder>
 </Solution>
