@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using ServiceInvoiceImporter.Core.Domains.Invoices.Dtos.Responses;
 using ServiceInvoiceImporter.Core.Shared;
 using ServiceInvoiceImporter.Infrastructure.Interfaces.Services;
@@ -9,11 +10,10 @@ public static class NotasFiscaisEndpoints
     public static void MapNotasFiscaisEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/notasfiscais")
-            .WithTags("NotasFiscais")
-            .WithOpenApi();
+            .WithTags("NotasFiscais");
 
         // Processa um arquivo XML de nota fiscal via upload
-        group.MapPost("processar-xml", async (IFormFile arquivo, IXmlProcessorService xmlProcessor) =>
+        group.MapPost("processar-xml", async (IFormFile arquivo, [FromServices] IXmlProcessorService xmlProcessor) =>
         {
             var resultado = await xmlProcessor.ProcessarXmlAsync(arquivo);
             return resultado.Sucesso ? Results.Ok(resultado) : Results.BadRequest(resultado);
@@ -23,10 +23,11 @@ public static class NotasFiscaisEndpoints
         .WithDescription("Processa um arquivo XML de nota fiscal via upload")
         .Accepts<IFormFile>("multipart/form-data")
         .Produces<ProcessamentoResultResponse>(200)
-        .Produces<ProcessamentoResultResponse>(400);
+        .Produces<ProcessamentoResultResponse>(400)
+        .DisableAntiforgery();
 
         // Busca uma nota fiscal específica pelo número
-        group.MapGet("{numero:int}", async (int numero, IXmlProcessorService xmlProcessor) =>
+        group.MapGet("{numero:int}", async (int numero, [FromServices] IXmlProcessorService xmlProcessor) =>
         {
             var resultado = await xmlProcessor.ObterNotaPorNumeroAsync(numero);
             return resultado.Sucesso ? Results.Ok(resultado) : Results.NotFound(resultado);
