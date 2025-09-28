@@ -9,6 +9,5 @@ public class NotaFiscal
     public DateOnly DataEmissao { get; set; }
     public string DescricaoServico { get; set; } = string.Empty;
     public decimal ValorTotal { get; set; }
-    public int MyProperty { get; set; }
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 }
