@@ -6,9 +6,9 @@ using ServiceInvoiceImporter.Infrastructure.Interfaces.Services;
 using ServiceInvoiceImporter.Core.Domains.Invoices.Mappings;
 using System.Xml;
 using System.Xml.Linq;
-using static ServiceInvoiceImporter.Core.Domains.Invoices.Mappings.NotaFiscalMappingExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using ServiceInvoiceImporter.Core.Domains.Invoices.Entities;
 
 namespace ServiceInvoiceImporter.Infrastructure.Services;
 
@@ -31,9 +31,7 @@ public class XmlProcessorService : IXmlProcessorService
                 .FirstOrDefaultAsync(n => n.Numero == numero);
 
             if (nota == null)
-            {
                 return ApiResponse<NotaFiscalResponse?>.Error($"Nota fiscal {numero} não encontrada");
-            }
 
             return ApiResponse<NotaFiscalResponse?>.Success(
                 nota.ToResponse()
@@ -121,9 +119,6 @@ public class XmlProcessorService : IXmlProcessorService
             {
                 Sucesso = false,
                 Mensagem = "Erro ao processar arquivo",
-                // Assumindo que existe uma propriedade para detalhes do erro
-                // Se não existir, remova esta linha
-                // DetalhesErro = ex.Message
             };
         }
     }
@@ -150,14 +145,14 @@ public class XmlProcessorService : IXmlProcessorService
         return (true, string.Empty);
     }
 
-    private NotaFiscalXmlData? ExtrairDadosXml(XDocument doc)
+    private NotaFiscal? ExtrairDadosXml(XDocument doc)
     {
         try
         {
             var notaElement = doc.Element("NotaFiscal");
             if (notaElement == null) return null;
 
-            return new NotaFiscalXmlData
+            return new NotaFiscal
             {
                 Numero = int.Parse(notaElement.Element("Numero")?.Value ?? "0"),
                 CNPJPrestador = notaElement.Element("Prestador")?.Element("CNPJ")?.Value ?? "",

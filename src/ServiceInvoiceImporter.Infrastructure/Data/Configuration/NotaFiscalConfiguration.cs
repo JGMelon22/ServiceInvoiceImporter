@@ -10,9 +10,10 @@ public class NotaFiscalConfiguration : IEntityTypeConfiguration<NotaFiscal>
     {
         builder.ToTable("NotasFiscais");
 
-        builder.HasKey(n => n.Id);
+        builder.HasKey(n => n.Numero);
 
         builder.Property(n => n.Numero)
+            .ValueGeneratedNever()
             .IsRequired();
 
         builder.Property(n => n.CNPJPrestador)
@@ -34,10 +35,8 @@ public class NotaFiscalConfiguration : IEntityTypeConfiguration<NotaFiscal>
             .IsRequired()
             .HasColumnType("decimal(10,2)");
 
-        builder.Property(n => n.DataCriacao)
-            .HasDefaultValueSql("GETUTCDATE()");
-
         builder.HasIndex(n => n.Numero)
-            .HasDatabaseName("IDX_NotaFiscal_Numero");
+            .HasDatabaseName("IDX_NotaFiscal_Numero")
+            .IsUnique(); ;
     }
 }

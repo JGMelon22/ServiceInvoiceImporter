@@ -12,8 +12,8 @@ using ServiceInvoiceImporter.Infrastructure.Data;
 namespace ServiceInvoiceImporter.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250928212457_UpdateIndexKey")]
-    partial class UpdateIndexKey
+    [Migration("20250929120616_ExtractXMLData")]
+    partial class ExtractXMLData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,8 @@ namespace ServiceInvoiceImporter.Infrastructure.Migrations
 
             modelBuilder.Entity("ServiceInvoiceImporter.Core.Domains.Invoices.Entities.NotaFiscal", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Numero")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CNPJPrestador")
                         .IsRequired()
@@ -43,11 +40,6 @@ namespace ServiceInvoiceImporter.Infrastructure.Migrations
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)");
 
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
                     b.Property<DateOnly>("DataEmissao")
                         .HasColumnType("date");
 
@@ -56,15 +48,13 @@ namespace ServiceInvoiceImporter.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("Numero")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Numero");
 
                     b.HasIndex("Numero")
+                        .IsUnique()
                         .HasDatabaseName("IDX_NotaFiscal_Numero");
 
                     b.ToTable("NotasFiscais", (string)null);

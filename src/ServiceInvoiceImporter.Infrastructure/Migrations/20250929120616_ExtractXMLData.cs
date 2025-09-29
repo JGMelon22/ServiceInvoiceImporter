@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ServiceInvoiceImporter.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class ExtractXMLData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,30 +15,23 @@ namespace ServiceInvoiceImporter.Infrastructure.Migrations
                 name: "NotasFiscais",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     Numero = table.Column<int>(type: "int", nullable: false),
                     CNPJPrestador = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     CNPJTomador = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     DataEmissao = table.Column<DateOnly>(type: "date", nullable: false),
                     DescricaoServico = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NotasFiscais", x => x.Id);
+                    table.PrimaryKey("PK_NotasFiscais", x => x.Numero);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IDX_NotaFiscal_CnpjPrestador",
+                name: "IDX_NotaFiscal_Numero",
                 table: "NotasFiscais",
-                column: "CNPJPrestador");
-
-            migrationBuilder.CreateIndex(
-                name: "IDX_NotaFiscal_Id",
-                table: "NotasFiscais",
-                column: "Id");
+                column: "Numero",
+                unique: true);
         }
 
         /// <inheritdoc />

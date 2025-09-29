@@ -20,41 +20,25 @@ public static class NotaFiscalMappingExtensions
     public static NotaFiscalResponse ToResponse(this NotaFiscal notaFiscal)
         => new NotaFiscalResponse
         {
-            Id = notaFiscal.Id,
             Numero = notaFiscal.Numero,
             CNPJPrestador = notaFiscal.CNPJPrestador,
             CNPJTomador = notaFiscal.CNPJTomador,
             DataEmissao = notaFiscal.DataEmissao,
             DescricaoServico = notaFiscal.DescricaoServico,
             ValorTotal = notaFiscal.ValorTotal,
-            DataCriacao = notaFiscal.DataCriacao
         };
 
-    public static IEnumerable<NotaFiscalResponse> ToResponse(this IEnumerable<NotaFiscal> notasFiscais)
-        => notasFiscais.Select(nf => nf.ToResponse());
-
-    public static List<NotaFiscalResponse> ToResponseList(this List<NotaFiscal> notasFiscais)
+    public static List<NotaFiscalResponse> ToResponse(this List<NotaFiscal> notasFiscais)
         => notasFiscais.Select(nf => nf.ToResponse()).ToList();
 
-    public static NotaFiscal ToNotaFiscalFromXml(this NotaFiscalXmlData xmlData)
+    public static NotaFiscal ToNotaFiscalFromXml(this NotaFiscal notaFiscal)
         => new NotaFiscal
         {
-            Numero = xmlData.Numero,
-            CNPJPrestador = xmlData.CNPJPrestador,
-            CNPJTomador = xmlData.CNPJTomador,
-            DataEmissao = xmlData.DataEmissao,
-            DescricaoServico = xmlData.DescricaoServico,
-            ValorTotal = xmlData.ValorTotal
+            Numero = notaFiscal.Numero,
+            CNPJPrestador = notaFiscal.CNPJPrestador,
+            CNPJTomador = notaFiscal.CNPJTomador,
+            DataEmissao = notaFiscal.DataEmissao,
+            DescricaoServico = notaFiscal.DescricaoServico,
+            ValorTotal = notaFiscal.ValorTotal
         };
-
-    // Classe auxiliar para dados extraídos do XML
-    public class NotaFiscalXmlData
-    {
-        public int Numero { get; set; }
-        public string CNPJPrestador { get; set; } = string.Empty;
-        public string CNPJTomador { get; set; } = string.Empty;
-        public DateOnly DataEmissao { get; set; }
-        public string DescricaoServico { get; set; } = string.Empty;
-        public decimal ValorTotal { get; set; }
-    }
 }
