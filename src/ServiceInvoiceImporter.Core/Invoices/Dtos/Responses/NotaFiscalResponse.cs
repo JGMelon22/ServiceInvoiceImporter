@@ -1,6 +1,6 @@
 namespace ServiceInvoiceImporter.Core.Domains.Invoices.Dtos.Responses;
 
-public class NotaFiscalResponse
+public record NotaFiscalResponse
 {
     public int Numero { get; init; }
     public string CNPJPrestador { get; init; } = string.Empty;
