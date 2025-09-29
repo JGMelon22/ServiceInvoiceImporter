@@ -123,54 +123,21 @@ public class XmlProcessorService : IXmlProcessorService
         }
     }
 
-    // Método auxiliar para validar extensão do arquivo. 
-    // A fins de simplicidade mantive como um método de validação local e não uma service dedicada
-    private (bool IsValid, string ErrorMessage) ValidarArquivoXml(IFormFile arquivo)
-    {
-        if (arquivo == null || arquivo.Length == 0)
-        {
-            _logger.LogWarning("Tentativa de upload sem arquivo");
-            return (false, "Arquivo não fornecido ou vazio");
-        }
-
-        var extension = Path.GetExtension(arquivo.FileName);
-        if (!string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("Extensão inválida: {Extension} para arquivo {FileName}",
-                extension, arquivo.FileName);
-
-            return (false, $"Extensão de arquivo inválida: '{extension}'. Esperado: .xml");
-        }
-
-        return (true, string.Empty);
-    }
-
-    private NotaFiscal? ExtrairDadosXml(XDocument doc)
-    {
-        try
-        {
-            var notaElement = doc.Element("NotaFiscal");
-            if (notaElement == null) return null;
-
-            return new NotaFiscal
-            {
-                Numero = int.Parse(notaElement.Element("Numero")?.Value ?? "0"),
-                CNPJPrestador = notaElement.Element("Prestador")?.Element("CNPJ")?.Value ?? "",
-                CNPJTomador = notaElement.Element("Tomador")?.Element("CNPJ")?.Value ?? "",
-                DataEmissao = DateOnly.Parse(notaElement.Element("DataEmissao")?.Value ?? DateTime.Now.ToString()),
-                DescricaoServico = notaElement.Element("Servico")?.Element("Descricao")?.Value ?? "",
-                ValorTotal = decimal.Parse(notaElement.Element("Servico")?.Element("Valor")?.Value ?? "0")
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erro ao extrair dados do XML");
-            return null;
-        }
-    }
-
     public async Task<ProcessamentoResultResponse> ProcessarXmlLoteAsync(List<IFormFile> arquivos)
     {
+        if (arquivos == null || arquivos.Count == 0)
+        {
+            _logger.LogWarning("Tentativa de processamento em lote sem arquivos fornecidos");
+            return new ProcessamentoResultResponse
+            {
+                Sucesso = false,
+                Mensagem = "Nenhum arquivo fornecido para processamento",
+                NotasProcessadas = 0,
+                NotasProcessadasDetalhes = new List<NotaFiscalResponse>(),
+                Erros = new List<string>()
+            };
+        }
+
         var resultado = new ProcessamentoResultResponse
         {
             Sucesso = true,
@@ -237,4 +204,51 @@ public class XmlProcessorService : IXmlProcessorService
 
         return resultado;
     }
+
+    // Método auxiliar para validar extensão do arquivo. 
+    // A fins de simplicidade mantive como um método de validação local e não uma service dedicada
+    private (bool IsValid, string ErrorMessage) ValidarArquivoXml(IFormFile arquivo)
+    {
+        if (arquivo == null || arquivo.Length == 0)
+        {
+            _logger.LogWarning("Tentativa de upload sem arquivo");
+            return (false, "Arquivo não fornecido ou vazio");
+        }
+
+        var extension = Path.GetExtension(arquivo.FileName);
+        if (!string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Extensão inválida: {Extension} para arquivo {FileName}",
+                extension, arquivo.FileName);
+
+            return (false, $"Extensão de arquivo inválida: '{extension}'. Esperado: .xml");
+        }
+
+        return (true, string.Empty);
+    }
+
+    private NotaFiscal? ExtrairDadosXml(XDocument doc)
+    {
+        try
+        {
+            var notaElement = doc.Element("NotaFiscal");
+            if (notaElement == null) return null;
+
+            return new NotaFiscal
+            {
+                Numero = int.Parse(notaElement.Element("Numero")?.Value ?? "0"),
+                CNPJPrestador = notaElement.Element("Prestador")?.Element("CNPJ")?.Value ?? "",
+                CNPJTomador = notaElement.Element("Tomador")?.Element("CNPJ")?.Value ?? "",
+                DataEmissao = DateOnly.Parse(notaElement.Element("DataEmissao")?.Value ?? DateTime.Now.ToString()),
+                DescricaoServico = notaElement.Element("Servico")?.Element("Descricao")?.Value ?? "",
+                ValorTotal = decimal.Parse(notaElement.Element("Servico")?.Element("Valor")?.Value ?? "0")
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao extrair dados do XML");
+            return null;
+        }
+    }
+
 }
