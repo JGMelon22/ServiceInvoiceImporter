@@ -7,5 +7,6 @@ namespace ServiceInvoiceImporter.Infrastructure.Interfaces.Services;
 public interface IXmlProcessorService
 {
     Task<ProcessamentoResultResponse> ProcessarXmlAsync(IFormFile arquivo);
+    Task<ProcessamentoResultResponse> ProcessarXmlLoteAsync(List<IFormFile> arquivos);
     Task<ApiResponse<NotaFiscalResponse?>> ObterNotaPorNumeroAsync(int numero);
 }

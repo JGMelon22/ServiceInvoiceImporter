@@ -168,4 +168,73 @@ public class XmlProcessorService : IXmlProcessorService
             return null;
         }
     }
+
+    public async Task<ProcessamentoResultResponse> ProcessarXmlLoteAsync(List<IFormFile> arquivos)
+    {
+        var resultado = new ProcessamentoResultResponse
+        {
+            Sucesso = true,
+            Mensagem = "Processamento em lote iniciado"
+        };
+
+        var notasProcessadas = new List<NotaFiscalResponse>();
+        var erros = new List<string>();
+        int sucessos = 0;
+        int falhas = 0;
+
+        foreach (var arquivo in arquivos)
+        {
+            try
+            {
+                _logger.LogInformation("Processando arquivo: {FileName}", arquivo.FileName);
+
+                var resultadoIndividual = await ProcessarXmlAsync(arquivo);
+
+                if (resultadoIndividual.Sucesso)
+                {
+                    sucessos++;
+                    notasProcessadas.AddRange(resultadoIndividual.NotasProcessadasDetalhes);
+                    _logger.LogInformation("Arquivo processado com sucesso: {FileName}", arquivo.FileName);
+                }
+                else
+                {
+                    falhas++;
+                    erros.Add($"{arquivo.FileName}: {resultadoIndividual.Mensagem}");
+                    erros.AddRange(resultadoIndividual.Erros.Select(e => $"{arquivo.FileName}: {e}"));
+                    _logger.LogWarning("Falha ao processar arquivo: {FileName} - {Erro}",
+                        arquivo.FileName, resultadoIndividual.Mensagem);
+                }
+            }
+            catch (Exception ex)
+            {
+                falhas++;
+                var mensagemErro = $"Erro inesperado ao processar {arquivo.FileName}: {ex.Message}";
+                erros.Add(mensagemErro);
+                _logger.LogError(ex, "Erro inesperado ao processar arquivo: {FileName}", arquivo.FileName);
+            }
+        }
+
+        string mensagem = (falhas, sucessos) switch
+        {
+            (0, _) => $"Todos os {sucessos} arquivos processados com sucesso",
+            (_, 0) => $"Nenhum arquivo foi processado. {falhas} falha(s)",
+            _ => $"Processamento parcial: {sucessos} sucesso(s), {falhas} falha(s)"
+        };
+
+        bool sucesso = falhas == 0 || sucessos > 0;
+
+        resultado = resultado with
+        {
+            Sucesso = sucesso,
+            Mensagem = mensagem,
+            NotasProcessadas = sucessos,
+            NotasProcessadasDetalhes = notasProcessadas,
+            Erros = erros
+        };
+
+        _logger.LogInformation("Processamento em lote finalizado: {Sucessos} sucessos, {Falhas} falhas",
+            sucessos, falhas);
+
+        return resultado;
+    }
 }

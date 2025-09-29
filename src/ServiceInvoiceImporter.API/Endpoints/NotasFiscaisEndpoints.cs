@@ -26,6 +26,21 @@ public static class NotasFiscaisEndpoints
         .Produces<ProcessamentoResultResponse>(400)
         .DisableAntiforgery();
 
+        // Processa múltiplos arquivos XML em lote
+        group.MapPost("processar-xml-lote", async (IFormFileCollection arquivos, [FromServices] IXmlProcessorService xmlProcessor) =>
+        {
+            var listaArquivos = arquivos.ToList();
+            var resultado = await xmlProcessor.ProcessarXmlLoteAsync(listaArquivos);
+            return resultado.Sucesso ? Results.Ok(resultado) : Results.BadRequest(resultado);
+        })
+        .WithName("ProcessarXmlLote")
+        .WithSummary("Processa múltiplos arquivos XML de notas fiscais em lote")
+        .WithDescription("Processa múltiplos arquivos XML de notas fiscais via upload em lote")
+        .Accepts<IFormFileCollection>("multipart/form-data")
+        .Produces<ProcessamentoResultResponse>(200)
+        .Produces<ProcessamentoResultResponse>(400)
+        .DisableAntiforgery();
+
         // Busca uma nota fiscal específica pelo número
         group.MapGet("{numero:int}", async (int numero, [FromServices] IXmlProcessorService xmlProcessor) =>
         {
