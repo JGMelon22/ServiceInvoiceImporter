@@ -1,14 +1,14 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using ServiceInvoiceImporter.Core.Domains.Invoices.Dtos.Requests;
 using ServiceInvoiceImporter.Core.Domains.Invoices.Dtos.Responses;
+using ServiceInvoiceImporter.Core.Domains.Invoices.Mappings;
 using ServiceInvoiceImporter.Core.Shared;
 using ServiceInvoiceImporter.Infrastructure.Data;
 using ServiceInvoiceImporter.Infrastructure.Interfaces.Services;
-using ServiceInvoiceImporter.Core.Domains.Invoices.Mappings;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using ServiceInvoiceImporter.Core.Domains.Invoices.Entities;
 
 namespace ServiceInvoiceImporter.Infrastructure.Services;
 
@@ -75,7 +75,7 @@ public class XmlProcessorService : IXmlProcessorService
                     Mensagem = "Não foi possível extrair dados do XML"
                 };
             }
-            var notaFiscal = xmlData.ToNotaFiscalFromXml();
+            var notaFiscal = xmlData.ToDomain();
 
             // Verificar duplicata
             var notaExistente = await _dbContext.NotasFiscais
@@ -227,22 +227,21 @@ public class XmlProcessorService : IXmlProcessorService
         return (true, string.Empty);
     }
 
-    private NotaFiscal? ExtrairDadosXml(XDocument doc)
+    private NotaFiscalCreateRequest? ExtrairDadosXml(XDocument doc)
     {
         try
         {
             var notaElement = doc.Element("NotaFiscal");
             if (notaElement == null) return null;
 
-            return new NotaFiscal
-            {
-                Numero = int.Parse(notaElement.Element("Numero")?.Value ?? "0"),
-                CNPJPrestador = notaElement.Element("Prestador")?.Element("CNPJ")?.Value ?? "",
-                CNPJTomador = notaElement.Element("Tomador")?.Element("CNPJ")?.Value ?? "",
-                DataEmissao = DateOnly.Parse(notaElement.Element("DataEmissao")?.Value ?? DateTime.Now.ToString()),
-                DescricaoServico = notaElement.Element("Servico")?.Element("Descricao")?.Value ?? "",
-                ValorTotal = decimal.Parse(notaElement.Element("Servico")?.Element("Valor")?.Value ?? "0")
-            };
+            return new NotaFiscalCreateRequest(
+            Numero: int.Parse(notaElement.Element("Numero")?.Value ?? "0"),
+            CNPJPrestador: notaElement.Element("Prestador")?.Element("CNPJ")?.Value ?? "",
+            CNPJTomador: notaElement.Element("Tomador")?.Element("CNPJ")?.Value ?? "",
+            DataEmissao: DateOnly.Parse(notaElement.Element("DataEmissao")?.Value ?? DateTime.Now.ToString()),
+            DescricaoServico: notaElement.Element("Servico")?.Element("Descricao")?.Value ?? "",
+            ValorTotal: decimal.Parse(notaElement.Element("Servico")?.Element("Valor")?.Value ?? "0")
+            );
         }
         catch (Exception ex)
         {

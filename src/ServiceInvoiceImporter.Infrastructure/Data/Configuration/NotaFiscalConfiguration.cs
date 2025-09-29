@@ -37,6 +37,6 @@ public class NotaFiscalConfiguration : IEntityTypeConfiguration<NotaFiscal>
 
         builder.HasIndex(n => n.Numero)
             .HasDatabaseName("IDX_NotaFiscal_Numero")
-            .IsUnique(); ;
+            .IsUnique(); 
     }
 }

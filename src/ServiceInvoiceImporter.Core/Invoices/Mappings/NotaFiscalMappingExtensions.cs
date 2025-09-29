@@ -30,15 +30,4 @@ public static class NotaFiscalMappingExtensions
 
     public static List<NotaFiscalResponse> ToResponse(this List<NotaFiscal> notasFiscais)
         => notasFiscais.Select(nf => nf.ToResponse()).ToList();
-
-    public static NotaFiscal ToNotaFiscalFromXml(this NotaFiscal notaFiscal)
-        => new NotaFiscal
-        {
-            Numero = notaFiscal.Numero,
-            CNPJPrestador = notaFiscal.CNPJPrestador,
-            CNPJTomador = notaFiscal.CNPJTomador,
-            DataEmissao = notaFiscal.DataEmissao,
-            DescricaoServico = notaFiscal.DescricaoServico,
-            ValorTotal = notaFiscal.ValorTotal
-        };
 }
